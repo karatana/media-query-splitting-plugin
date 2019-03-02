@@ -40,7 +40,7 @@ module.exports = class MediaQuerySplittingPlugin {
           const matchMediaPolyfill       = `
             // matchMedia polyfill
             window.matchMedia||(window.matchMedia=function(){"use strict";var e=window.styleMedia||window.media;if(!e){var t,d=document.createElement("style"),i=document.getElementsByTagName("script")[0];d.type="text/css",d.id="matchmediajs-test",i?i.parentNode.insertBefore(d,i):document.head.appendChild(d),t="getComputedStyle"in window&&window.getComputedStyle(d,null)||d.currentStyle,e={matchMedium:function(e){var i="@media "+e+"{ #matchmediajs-test { width: 1px; } }";return d.styleSheet?d.styleSheet.cssText=i:d.textContent=i,"1px"===t.width}}}return function(t){return{matches:e.matchMedium(t||"all"),media:t||"all"}}}());
-            
+
             // Define current mediaType
             var getMediaType = function() {
               return {
@@ -75,16 +75,16 @@ module.exports = class MediaQuerySplittingPlugin {
             var tryAppendNewMedia = function() {
               var linkElements           = document.getElementsByTagName('link');
               var chunkIds               = {};
-              
+
               for (var i = 0; i < linkElements.length; i++) {
                 var chunkHref            = linkElements[i].href.replace(/.*\\//, '');
-                
+
                 if (/(mobile|tablet|desktop).*\\.css$/.test(chunkHref)) {
                   var chunkId            = chunkHref.replace(/\\..*/, '');
                   var chunkMediaType     = chunkHref.replace(chunkId + '.', '').replace(/\\..*/, '');
                   var chunkHash          = chunkHref.replace(/\\.css$/, '').replace('' + chunkId + '.' + chunkMediaType + '.', '');
                   var chunkHrefPrefix    = linkElements[i].href.replace('' + chunkId + '.' + chunkMediaType + '.' + chunkHash + '.css', '');
-  
+
                   if (!chunkIds[chunkId]) {
                     chunkIds[chunkId]    = {
                       mediaTypes: [ chunkMediaType ],
@@ -104,7 +104,7 @@ module.exports = class MediaQuerySplittingPlugin {
                   var hasTablet          = chunkIds[i].mediaTypes.indexOf('tablet') !== -1;
                   var _hasCurrentMedia   = chunkIds[i].mediaTypes.indexOf(currentMediaType) !== -1;
                   var hasCurrentMedia    = isTablet ? hasTablet || _hasCurrentMedia : _hasCurrentMedia;
-                  
+
                   if (!hasCurrentMedia) {
                     var fullhref         = '' + chunkIds[i].prefix + '' + i + '.' + currentMediaType + '.' + chunkIds[i].hash + '.css';
                     var linkTag          = document.createElement('link');
@@ -146,7 +146,7 @@ module.exports = class MediaQuerySplittingPlugin {
               if (currentMediaType !== newMediaType) {
                 currentMediaType         = newMediaType;
               }
-              
+
               tryAppendNewMedia()
             };
 
@@ -164,11 +164,11 @@ module.exports = class MediaQuerySplittingPlugin {
                 if (/tablet/.test(mediaType)) {
                   var linkElements         = document.getElementsByTagName('link');
                   var hasTabletStyle       = false;
-  
+
                   for (var i = 0; i < linkElements.length; i++) {
                     var chunkHref          = linkElements[i].href.replace(/.*\\//, '');
-                    var currentChunkRegExp = new RegExp('^' + chunkId + '\\\\' + '.tablet' + '\\\\' + '.') 
-                    
+                    var currentChunkRegExp = new RegExp('^' + chunkId + '\\\\' + '.tablet' + '\\\\' + '.')
+
                     if (currentChunkRegExp.test(chunkHref)) {
                       mediaType            = 'tablet';
                       break;
@@ -200,7 +200,6 @@ module.exports = class MediaQuerySplittingPlugin {
         const child                      = asset.children && asset.children[0]
         const chunkValue                 = typeof asset.source === 'function' ? asset.source() : (child || asset)._value
         const splittedValue              = splitByMediaQuery({ cssFile: chunkValue, mediaOptions })
-        const chunkHash                  = chunkName.replace(/\.css$/, '').replace(/.*\./, '')
         const chunkId                    = chunkName.replace(/\..*/, '')
 
         Object.keys(splittedValue).forEach((mediaType) => {
@@ -208,7 +207,7 @@ module.exports = class MediaQuerySplittingPlugin {
 
           if (splitTablet || !/tablet(Portrait|Landscape)/.test(mediaType)) {
             const isCommon               = mediaType === 'common'
-            const splittedMediaChunkName = isCommon ? chunkName : `${chunkId}.${mediaType}.${chunkHash}.css`
+            const splittedMediaChunkName = isCommon ? chunkName : `${chunkId}.${mediaType}.css`
 
             // Add chunk to assets
             compilation.assets[splittedMediaChunkName] = {
